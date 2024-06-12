@@ -1,6 +1,7 @@
 using Character;
 using Core.Interfaces;
 using Factories;
+using UI;
 using UnityEngine;
 using Utilities;
 
@@ -9,6 +10,7 @@ namespace Core
     public class Bootstrap : MonoBehaviour
     {
         [SerializeField] private Updater _updater;
+        [SerializeField] private GameCanvas _gameCanvas;
 
         [Header("Configurations")]
         [SerializeField] private CharacterConfiguration _characterConfiguration;
@@ -25,7 +27,7 @@ namespace Core
 
         private MainCharacter BindCharacter(IInputService inputService)
         {
-            var factory = new CharacterFactory(_characterConfiguration, _updater, inputService);
+            var factory = new CharacterFactory(_characterConfiguration, _updater, inputService, _gameCanvas);
             return factory.Create();
         }
 

@@ -8,8 +8,8 @@ namespace Core
     {
         public event Action<Vector3> OnMove;
         public event Action<Vector2> OnMouseLook;
-        public event Action OnLeftMouseButtonDown;
         public event Action OnInteractBtnTap;
+        public event Action OnTakeItemBtnTap;
 
         private readonly Updater _updater;
 
@@ -28,6 +28,7 @@ namespace Core
             GetAxis();
             Move();
             ReadInteract();
+            ReadTakeItem();
         }
 
         private void Move()
@@ -53,6 +54,14 @@ namespace Core
             if (Input.GetKeyDown(KeyCode.E))
             {
                 OnInteractBtnTap?.Invoke();
+            }
+        }
+
+        private void ReadTakeItem()
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                OnTakeItemBtnTap?.Invoke();
             }
         }
 

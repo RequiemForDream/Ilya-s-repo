@@ -1,6 +1,7 @@
 ﻿using Core;
 using Core.Interfaces;
 using Interactables;
+using UI;
 using UnityEngine;
 
 namespace Character
@@ -11,15 +12,18 @@ namespace Character
         private readonly CharacterModel _characterModel;
         private readonly Updater _updater;
         private readonly IInputService _inputService;
+        private readonly GameCanvas _gameCanvas;
 
         private Quaternion _startTransformRotation;
 
-        public MainCharacter(CharacterView characterView, CharacterModel characterModel, Updater updater, IInputService inputService)
+        public MainCharacter(CharacterView characterView, CharacterModel characterModel, Updater updater, IInputService inputService,
+            GameCanvas gameCanvas)
         {
             this._characterView = characterView;
             _characterModel = characterModel;
             _updater = updater;
             _inputService = inputService;
+            _gameCanvas = gameCanvas;
         }
 
         public void Initialize()
@@ -35,6 +39,7 @@ namespace Character
             _inputService.OnMouseLook += OnMouseLook;
             _inputService.OnMove += OnMoveInput;
             _inputService.OnInteractBtnTap += TryToInteract;
+            _inputService.OnTakeItemBtnTap += TryToTakeItem;
         }
 
         private void TryToInteract()
@@ -42,6 +47,19 @@ namespace Character
             var ray = new Ray(_characterView.MainCamera.transform.position, _characterView.MainCamera.transform.forward);
 
             if (Physics.Raycast(ray, out RaycastHit hitInfo, _characterModel.RayRange, _characterModel.InteractableLayer))
+            {
+                if (hitInfo.collider.TryGetComponent(out IInteractable interactable))
+                {
+                    interactable.Interact();
+                }
+            }
+        }
+
+        private void TryToTakeItem()
+        {
+            var ray = new Ray(_characterView.MainCamera.transform.position, _characterView.MainCamera.transform.forward);
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, _characterModel.RayRange, _characterModel.TakeableItemLayer))
             {
                 if (hitInfo.collider.TryGetComponent(out Interactable interactable))
                 {
@@ -70,7 +88,16 @@ namespace Character
 
         public void Tick(float deltaTime)
         {
-            
+            var ray = new Ray(_characterView.MainCamera.transform.position, _characterView.MainCamera.transform.forward);
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, _characterModel.RayRange, _characterModel.InteractableLayer))
+            {
+                _gameCanvas.InteractableText.SetActive(true);
+            }
+            else
+            {
+                _gameCanvas.InteractableText.SetActive(false);
+            }
         }
 
         private void Destroy()

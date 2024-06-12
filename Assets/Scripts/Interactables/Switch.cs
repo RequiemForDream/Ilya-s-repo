@@ -5,8 +5,9 @@ namespace Interactables
     public class Switch : Interactable
     {
         [SerializeField] private Transform _switchPanel;
-        [SerializeField] private Quaternion _turnOffRotation;
-        [SerializeField] private Quaternion _turnOnRotation;
+        [SerializeField] private Light[] _lights;
+        [SerializeField] private Vector3 _turnOffRotation;
+        [SerializeField] private Vector3 _turnOnRotation;
 
         private bool _isTurnedOn = true;
 
@@ -15,12 +16,20 @@ namespace Interactables
             if (_isTurnedOn)
             {
                 _isTurnedOn = false;
-                _switchPanel.localRotation = _turnOffRotation;
+                _switchPanel.eulerAngles = _turnOffRotation;
+                foreach (var light in _lights)
+                {
+                    light.gameObject.SetActive(false);
+                } 
             }
-            else
+            else if (!_isTurnedOn)
             {
                 _isTurnedOn = true;
-                _switchPanel.localRotation = _turnOnRotation;
+                _switchPanel.eulerAngles = _turnOnRotation;
+                foreach (var light in _lights)
+                {
+                    light.gameObject.SetActive(true);
+                }
             }
         }
     }

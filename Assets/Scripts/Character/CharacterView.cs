@@ -10,6 +10,7 @@ namespace Character
 
         public Transform Head;
         public Transform MainCamera;
+        public Transform TakenObjectPosition;
         public CharacterController CharacterController;
 
         private void OnDestroy()

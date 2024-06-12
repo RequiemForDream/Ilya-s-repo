@@ -15,3 +15,10 @@ MonoBehaviour:
   _characterView: {fileID: 64416488384233468, guid: 977a32278f2b161439a2a63e46cc738e, type: 3}
   _characterModel:
     _speed: 3
+    _rayRange: 2
+    _interactableLayerMask:
+      serializedVersion: 2
+      m_Bits: 64
+    _takeableItemLayerMask:
+      serializedVersion: 2
+      m_Bits: 0
