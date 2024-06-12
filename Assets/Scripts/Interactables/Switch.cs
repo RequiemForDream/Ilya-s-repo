@@ -9,6 +9,10 @@ namespace Interactables
         [SerializeField] private Vector3 _turnOffRotation;
         [SerializeField] private Vector3 _turnOnRotation;
 
+        [Header("Sound")]
+        [SerializeField] private AudioSource _audioSource;
+        [SerializeField] private AudioClip _audioClip;
+
         private bool _isTurnedOn = true;
 
         public override void Interact()
@@ -31,6 +35,8 @@ namespace Interactables
                     light.gameObject.SetActive(true);
                 }
             }
+
+            _audioSource.PlayOneShot(_audioClip);
         }
     }
 }

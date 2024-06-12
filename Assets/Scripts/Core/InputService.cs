@@ -10,6 +10,7 @@ namespace Core
         public event Action<Vector2> OnMouseLook;
         public event Action OnInteractBtnTap;
         public event Action OnTakeItemBtnTap;
+        public event Action OnThrowItemBtnTap;
 
         private readonly Updater _updater;
 
@@ -29,6 +30,7 @@ namespace Core
             Move();
             ReadInteract();
             ReadTakeItem();
+            ReadThrowItem();
         }
 
         private void Move()
@@ -57,9 +59,17 @@ namespace Core
             }
         }
 
-        private void ReadTakeItem()
+        private void ReadThrowItem()
         {
             if (Input.GetKeyDown(KeyCode.G))
+            {
+                OnThrowItemBtnTap?.Invoke();
+            }
+        }
+
+        private void ReadTakeItem()
+        {
+            if (Input.GetKeyDown(KeyCode.F))
             {
                 OnTakeItemBtnTap?.Invoke();
             }

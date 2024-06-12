@@ -15,6 +15,8 @@ namespace Character
         private readonly GameCanvas _gameCanvas;
 
         private Quaternion _startTransformRotation;
+        private bool _isTaken;
+        private Takeable _currentItem = null;
 
         public MainCharacter(CharacterView characterView, CharacterModel characterModel, Updater updater, IInputService inputService,
             GameCanvas gameCanvas)
@@ -40,6 +42,7 @@ namespace Character
             _inputService.OnMove += OnMoveInput;
             _inputService.OnInteractBtnTap += TryToInteract;
             _inputService.OnTakeItemBtnTap += TryToTakeItem;
+            _inputService.OnThrowItemBtnTap += ThrowObject;
         }
 
         private void TryToInteract()
@@ -59,12 +62,30 @@ namespace Character
         {
             var ray = new Ray(_characterView.MainCamera.transform.position, _characterView.MainCamera.transform.forward);
 
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, _characterModel.RayRange, _characterModel.TakeableItemLayer))
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, _characterModel.TakeRange, _characterModel.TakeableItemLayer))
             {
-                if (hitInfo.collider.TryGetComponent(out Interactable interactable))
+                Debug.Log("Take");
+                if (!_isTaken)
                 {
-                    interactable.Interact();
+                    if (hitInfo.collider.TryGetComponent(out Takeable takeable))
+                    {
+                        takeable.Rigidbody.isKinematic = true;
+                        takeable.transform.parent = _characterView.transform;
+                        takeable.transform.position = _characterView.TakenObjectPosition.position;
+                        _isTaken = true;
+                        _currentItem = takeable;
+                    }
                 }
+            }
+        }
+
+        private void ThrowObject()
+        {
+            if (_currentItem != null)
+            {
+                _currentItem.ThrowItem();
+                _currentItem = null;
+                _isTaken = false;
             }
         }
 
@@ -90,13 +111,34 @@ namespace Character
         {
             var ray = new Ray(_characterView.MainCamera.transform.position, _characterView.MainCamera.transform.forward);
 
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, _characterModel.RayRange, _characterModel.InteractableLayer))
+            if (_isTaken)
             {
-                _gameCanvas.InteractableText.SetActive(true);
+                _gameCanvas.TakenText.SetActive(true);
+                _gameCanvas.InteractableText.SetActive(false);
+                _gameCanvas.TakeableText.SetActive(false);
             }
             else
             {
-                _gameCanvas.InteractableText.SetActive(false);
+                _gameCanvas.TakenText.SetActive(false);
+                if (Physics.Raycast(ray, out RaycastHit hitInfo, _characterModel.RayRange, _characterModel.InteractableLayer))
+                {
+                    _gameCanvas.InteractableText.SetActive(true);
+                    _gameCanvas.TakeableText.SetActive(false);
+                }
+                else
+                {
+                    _gameCanvas.InteractableText.SetActive(false);
+                }
+
+                if (Physics.Raycast(ray, out RaycastHit hit, _characterModel.TakeRange, _characterModel.TakeableItemLayer))
+                {
+                    _gameCanvas.TakeableText.SetActive(true);
+                    _gameCanvas.InteractableText.SetActive(false);
+                }
+                else
+                {
+                    _gameCanvas.TakeableText.SetActive(false);
+                }
             }
         }
 

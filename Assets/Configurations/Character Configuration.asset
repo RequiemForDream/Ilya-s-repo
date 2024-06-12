@@ -19,6 +19,7 @@ MonoBehaviour:
     _interactableLayerMask:
       serializedVersion: 2
       m_Bits: 64
+    _takeRange: 10
     _takeableItemLayerMask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 128

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Core
 {
@@ -16,6 +18,8 @@ namespace Core
 
         private float _currentTime = 0;
 
+        private AudioSource[] _sources => new AudioSource[] {_doorAudio, _weatherSound};
+
         private void Start()
         {
             _currentTime = _timeBetweenSounds;
@@ -24,9 +28,20 @@ namespace Core
         private void Update()
         {
             _currentTime -= Time.deltaTime;
-            if (_currentTime < 0 )
+            if (_currentTime < 0f)
             {
+                var index = Random.Range(0, _sources.Length);
 
+                if (_sources[index] == _doorAudio)
+                {
+                    _doorAudio.PlayOneShot(_doorSound);
+                }
+                else
+                {
+                    _sources[index].PlayOneShot(_weatherAudio);
+                }
+
+                _currentTime = _timeBetweenSounds;
             }
         }
     }
